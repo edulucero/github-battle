@@ -35,7 +35,7 @@ function ReposGrid ({ repos }) {
         const { login, avatar_url } = owner
 
         return (
-          <li key={html_url} className='repo bg-light'>
+          <li key={html_url} className='card bg-light'>
             <h4 className='header-lg center-text'>
               #{index+1}
             </h4>
@@ -64,7 +64,7 @@ function ReposGrid ({ repos }) {
               </li>
               <li>
                 <FaExclamationTriangle color='rgb(241, 138, 147)' size={22} />
-                {open_issues.toLocaleString()}  open issues
+                {open_issues.toLocaleString()} open issues
               </li>
             </ul>
           </li>
@@ -140,7 +140,7 @@ ReposGrid.propTypes = {
          
          {this.isLoading() && <p>LOADING</p>}
 
-         {error && <p>{error}</p>}
+         {error && <p className='center-text error'>{error}</p>}
 
          {repos[selectedLanguage] && <ReposGrid repos={repos[selectedLanguage]}/>}
 
