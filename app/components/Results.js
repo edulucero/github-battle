@@ -3,6 +3,33 @@ import { battle } from '../utils/api'
 import { FaCompass, FaBriefcase, FaUsers, FaUserFriends, FaCode, FaUser} from 'react-icons/fa'
 import Card from './Card'
 import PropTypes from 'prop-types'
+import Loading from './Loading'
+import Tooltip from './Tooltip'
+import queryString from 'query-string'
+import { Link } from 'react-router-dom'
+
+const styles = {
+  container: {
+    position: 'relative',
+    display: 'flex'
+  },
+  tooltip: {
+    boxSizing: 'border-box',
+    position: 'absolute',
+    width: '160px',
+    bottom: '100%',
+    left: '50px',
+    marginLeft: '-80px',
+    borderRadius: '3px',
+    backgroundColor: 'hsla(0, 0%, 20%, 0.9)',
+    padding: '7px',
+    marginBottom: '5px',
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: '14px'
+  }
+}
+
 
 function ProfileList ({profile}) {
   return (
@@ -13,14 +40,18 @@ function ProfileList ({profile}) {
       </li>
       {profile.location && (
         <li>
-          <FaCompass color='rgb(144, 115, 255)' size={22}/>
+          <Tooltip text="User's location">
+            <FaCompass color='rgb(144, 115, 255)' size={22}/>
             {profile.location}
+          </Tooltip>
         </li>
       )}
       {profile.company && (
         <li>
-          <FaBriefcase color='#795548' size={22}/>
-          {profile.company}
+          <Tooltip text="User's Company">
+            <FaBriefcase color='#795548' size={22}/>
+            {profile.company}
+          </Tooltip>
         </li>
       )}
       <li>
@@ -40,18 +71,14 @@ ProfileList.propTypes = {
 }
 
 export default class results extends React.Component {
-  constructor(props) {
-    super(props)
-
-    this.state={
+  state={
       winner: null,
       loser: null,
       error: null,
       loading: true
     }
-  }
   componentDidMount () {
-    const { playerOne, playerTwo } = this.props
+    const { playerOne, playerTwo } = queryString.parse(this.props.location.search)
 
     battle([playerOne, playerTwo])
       .then((players) => {
@@ -72,7 +99,7 @@ export default class results extends React.Component {
     const { winner, loser, error, loading } = this.state
 
     if (loading === true) {
-      return <p>LOADING</p>
+      return <Loading text='Battling' />
     }
 
     if (error) {
@@ -102,19 +129,13 @@ export default class results extends React.Component {
             <ProfileList profile={loser.profile} />
           </Card>
         </div>
-        <button
+        <Link
+          to='/battle'
           className='btn dark-btn btn-space'
-          onClick={this.props.onReset}
         >
           Reset
-        </button>
+        </Link>
       </React.Fragment>
     )
   }
-}
-
-results.propTypes = {
-  playerOne: PropTypes.string.isRequired,
-  playerTwo: PropTypes.string.isRequired,
-  onReset: PropTypes.func.isRequired
 }

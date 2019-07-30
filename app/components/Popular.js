@@ -3,6 +3,8 @@ import PropTypes from 'prop-types'
 import { fetchPopularRepos } from '../utils/api'
 import { FaUser, FaStar, FaCodeBranch, FaExclamationTriangle } from 'react-icons/fa'
 import Card from './Card'
+import Loading from './Loading'
+import Tooltip from './Tooltip'
 
 function LanguagesNav({selected, onUpdateLanguage}) {
   const languages = ['All', 'Javascript', 'Ruby', 'Java', 'CSS', 'Python']
@@ -12,9 +14,9 @@ function LanguagesNav({selected, onUpdateLanguage}) {
       {languages.map((language) => (
         <li key={language}>
           <button 
-           className='btn-clear nav-link'
-           style={language === selected ? { color: 'rgb(187, 46, 31)'} : null}
-           onClick={() => onUpdateLanguage(language)}>
+            className='btn-clear nav-link'
+            style={language === selected ? { color: 'rgb(187, 46, 31)'} : null}
+            onClick={() => onUpdateLanguage(language)}>
             {language}
           </button>
         </li>
@@ -45,10 +47,12 @@ function ReposGrid ({ repos }) {
             >
               <ul className='card-list'>
                 <li>
-                  <FaUser color='rgb(255, 191, 116)' size={22}/>
-                  <a href={`https://github.com/${login}`}>
-                  {login}
-                  </a>
+                  <Tooltip text="Github username">
+                    <FaUser color='rgb(255, 191, 116)' size={22}/>
+                    <a href={`https://github.com/${login}`}>
+                    {login}
+                    </a>
+                  </Tooltip>
                 </li>
                 <li>
                   <FaStar color='rgb(225, 215, 0)' size={22}/>
@@ -75,25 +79,19 @@ ReposGrid.propTypes = {
   repos: PropTypes.array.isRequired
 }
 
- export default class Popular extends React.Component {
-   constructor(props) {
-     super(props)
-
-     this.state = {
+export default class Popular extends React.Component {
+  state = {
        selectedLanguage: 'All',
        repos: {},
        error: null
-     }
+  }
 
-     this.updateLanguage = this.updateLanguage.bind(this)
-     this.isLoading = this.isLoading.bind(this)
-   }
 
   componentDidMount () {
     this.updateLanguage(this.state.selectedLanguage)
   }
   
-   updateLanguage(selectedLanguage) {
+   updateLanguage = (selectedLanguage) => {
     this.setState({
       selectedLanguage,
       error: null,
@@ -119,7 +117,7 @@ ReposGrid.propTypes = {
     }
   }
 
-  isLoading() {
+  isLoading = () => {
     const { selectedLanguage, repos, error} = this.state
 
     return !repos[selectedLanguage] && error === null
@@ -135,7 +133,7 @@ ReposGrid.propTypes = {
            onUpdateLanguage = { this.updateLanguage }
          />
          
-         {this.isLoading() && <p>LOADING</p>}
+         {this.isLoading() && <Loading text='Fetching Repos' />}
 
          {error && <p className='center-text error'>{error}</p>}
 
